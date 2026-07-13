@@ -16,14 +16,14 @@ describe("OpenRouterClient", () => {
     const fetchImpl = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({
-        model: "openai/gpt-4o-mini",
+        model: "nvidia/nemotron-3-ultra-550b-a55b:free",
         choices: [{ message: { content: "こんにちは" } }],
       }),
     });
 
     const client = new OpenRouterClient({
       apiKey: "test-key",
-      model: "openai/gpt-4o-mini",
+      model: "nvidia/nemotron-3-ultra-550b-a55b:free",
       fetchImpl: fetchImpl as unknown as typeof fetch,
     });
 
@@ -33,7 +33,7 @@ describe("OpenRouterClient", () => {
 
     expect(result.content).toBe("こんにちは");
     expect(result.provider).toBe("openrouter");
-    expect(result.model).toBe("openai/gpt-4o-mini");
+    expect(result.model).toBe("nvidia/nemotron-3-ultra-550b-a55b:free");
 
     expect(fetchImpl).toHaveBeenCalledOnce();
     const [url, init] = fetchImpl.mock.calls[0] as [string, RequestInit];
@@ -45,7 +45,7 @@ describe("OpenRouterClient", () => {
       model: string;
       messages: unknown[];
     };
-    expect(body.model).toBe("openai/gpt-4o-mini");
+    expect(body.model).toBe("nvidia/nemotron-3-ultra-550b-a55b:free");
     expect(body.messages).toHaveLength(1);
   });
 

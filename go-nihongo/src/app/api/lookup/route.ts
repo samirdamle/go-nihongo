@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { loadDictionary } from "@/server/dictionary/load";
 import { searchTerms } from "@/server/dictionary/search";
+import { createLlmClient, isOpenRouterConfigured } from "@/server/llm";
+import { assistTermLookup } from "@/server/lookup/term-assist";
 import { createSentenceTranslator } from "@/server/mt";
 import type {
   ApiErrorBody,
@@ -40,7 +42,20 @@ export async function POST(request: Request) {
   try {
     if (kind === "term") {
       const catalog = await loadDictionary();
-      const { entries, suggestions } = searchTerms(q, mode, catalog);
+      let { entries, suggestions } = searchTerms(q, mode, catalog);
+
+      // Dictionary miss → OpenRouter Nemotron transliteration/gloss assist (#25)
+      if (entries.length === 0 && isOpenRouterConfigured()) {
+        try {
+          entries = await assistTermLookup(createLlmClient(), q, mode);
+          suggestions = [];
+        } catch (e) {
+          const message = e instanceof Error ? e.message : "LLM assist failed";
+          // Soft-fail: return empty term result rather than 500 when dict empty
+          console.error("[lookup] term assist failed:", message);
+        }
+      }
+
       const response: LookupResponse = {
         kind: "term",
         query: q,
@@ -51,7 +66,7 @@ export async function POST(request: Request) {
       return NextResponse.json(response);
     }
 
-    // Sentence path — M3 will add real morph breakdown; stub structure now.
+    // Sentence path — translation via OpenRouter when key set (#25)
     const mt = createSentenceTranslator();
     const source =
       mode === "japanese" ? "ja" : mode === "english" ? "en" : "auto";
@@ -64,7 +79,27 @@ export async function POST(request: Request) {
     });
 
     const japaneseText =
-      mode === "english" ? translation.text : mode === "japanese" ? q : q;
+      mode === "english"
+        ? translation.text
+        : mode === "japanese"
+          ? q
+          : // romaji sentence: translation is English; keep query as surface
+            q;
+
+    // For romaji→EN translation path, also ask LLM for a Japanese rendering when OpenRouter is on
+    let resolvedJapanese = japaneseText;
+    if (mode === "romaji" && isOpenRouterConfigured()) {
+      try {
+        const ja = await mt.translate({
+          text: q,
+          source: "auto",
+          target: "ja",
+        });
+        resolvedJapanese = ja.text;
+      } catch {
+        // keep query as japaneseText fallback
+      }
+    }
 
     const response: LookupResponse = {
       kind: "sentence",
@@ -76,14 +111,14 @@ export async function POST(request: Request) {
         targetLang: target,
         provider: translation.provider,
       },
-      japaneseText,
+      japaneseText: resolvedJapanese,
       breakdown: [],
       suggestions: [],
     };
     return NextResponse.json(response);
   } catch (e) {
     const message = e instanceof Error ? e.message : "Unknown error";
-    if (message.includes("Translation")) {
+    if (/Translation|OpenRouter|translate/i.test(message)) {
       return error(502, "upstream_mt", message);
     }
     return error(500, "internal", message);
