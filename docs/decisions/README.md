@@ -10,3 +10,4 @@ Format: short Markdown ADRs, numbered.
 | [0004](./0004-mt-pluggable-google-default.md) | Pluggable MT; Google Cloud default | Accepted |
 | [0005](./0005-local-persistence-v1.md) | Local-only history/favorites in v1 | Accepted |
 | [0006](./0006-dictionary-source.md) | JMdict simplified dictionary source | Accepted |
+| [0007](./0007-openrouter-llm.md) | OpenRouter pluggable LLM gateway | Accepted |
