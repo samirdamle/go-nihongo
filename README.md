@@ -1,4 +1,4 @@
-# grok-lab
+# Go Nihongo!
 
 Lab monorepo root.
 
