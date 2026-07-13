@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -40,25 +40,22 @@ export function LookupWorkspace() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<LookupResponse | null>(null);
-  const [history, setHistory] = useState<HistoryItem[]>([]);
-  const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
+  const [history, setHistory] = useState<HistoryItem[]>(() => loadHistory());
+  const [favorites, setFavorites] = useState<FavoriteItem[]>(() =>
+    loadFavorites(),
+  );
   const [panel, setPanel] = useState<"results" | "history" | "favorites">(
     "results",
   );
 
-  useEffect(() => {
-    setHistory(loadHistory());
-    setFavorites(loadFavorites());
-  }, []);
+  const canSubmit = q.trim().length > 0 && !loading;
 
-  // Auto-detect unless user overrode
-  useEffect(() => {
-    const detected = detectInput(q);
+  function updateQuery(next: string) {
+    setQ(next);
+    const detected = detectInput(next);
     if (!modeLocked) setMode(detected.mode);
     if (!kindLocked) setKind(detected.kind);
-  }, [q, modeLocked, kindLocked]);
-
-  const canSubmit = q.trim().length > 0 && !loading;
+  }
 
   const emptyHint = useMemo(
     () =>
@@ -198,7 +195,7 @@ export function LookupWorkspace() {
 
         <Textarea
           value={q}
-          onChange={(e) => setQ(e.target.value)}
+          onChange={(e) => updateQuery(e.target.value)}
           placeholder="e.g. Hajimemashite · ありがとう · hello"
           rows={3}
           className="min-h-[96px] resize-y text-base"
@@ -272,11 +269,11 @@ export function LookupWorkspace() {
                     type="button"
                     className="w-full rounded-lg border p-3 text-left text-sm hover:bg-muted/50"
                     onClick={() => {
-                      setQ(h.q);
-                      setMode(h.mode as InputMode);
-                      setKind(h.kind as LookupKind);
                       setModeLocked(true);
                       setKindLocked(true);
+                      updateQuery(h.q);
+                      setMode(h.mode as InputMode);
+                      setKind(h.kind as LookupKind);
                       setPanel("results");
                     }}
                   >
