@@ -21,12 +21,12 @@
 
 **Deliverable:** Look up form matches UX spec; mock results from fixture JSON.
 
-- [ ] App layout + clean study theme tokens
-- [ ] Mode tabs + term/sentence toggle + input + submit
-- [ ] Client detect heuristics (unit-tested)
-- [ ] Result components: term list, sentence panel, empty/error
-- [ ] Furigana toggle (visual; data from fixtures)
-- [ ] MSW or route handler returning fixtures
+- [x] App layout + clean study theme tokens (baseline; polish tracked in issues)
+- [x] Mode tabs + term/sentence toggle + input + submit
+- [x] Client detect heuristics (unit-tested)
+- [x] Result components: term list, sentence panel, empty/error
+- [x] Furigana toggle (visual; data from fixtures)
+- [x] Route handler returning fixtures (`/api/lookup`)
 
 **Tests first:** detect heuristics; form validation; result rendering from fixtures.
 
@@ -49,18 +49,19 @@
 **Deliverable:** Translation + breakdown for short sentences.
 
 - [ ] Morph tokenization + function-word flags
-- [ ] `SentenceTranslator` + Google adapter + mock
-- [ ] Orchestrate sentence lookup per mode
-- [ ] Breakdown UI + function-word toggle
+- [x] `SentenceTranslator` + Google adapter + mock (scaffold)
+- [ ] Orchestrate sentence lookup per mode (full pipeline)
+- [x] Breakdown UI shell + function-word toggle (empty tokens until morph)
 - [ ] Click-through to term card
 
 **Tests first:** mock MT; morph on fixture sentences; API sentence shape.
 
 ## Milestone 4 — Local memory
 
-- [ ] History store + UI drawer/page
-- [ ] Favorites star + list
-- [ ] Limits (e.g. last 100 history items)
+- [x] History store + UI panel (basic)
+- [x] Favorites star + list (basic)
+- [x] Limits (last 100 history items)
+- [ ] Unit tests + UX polish (tracked in GitHub issues)
 
 **Tests first:** storage module unit tests (jsdom).
 
