@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { AlertCircle, History, Star } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +26,7 @@ import {
   type FavoriteItem,
   type HistoryItem,
 } from "@/features/history/storage";
-import { lookup } from "@/lib/api-client/lookup";
+import { lookup, LookupAbortedError } from "@/lib/api-client/lookup";
 import { detectInput } from "@/lib/detect/heuristics";
 import type { InputMode, LookupKind, LookupResponse } from "@/types/lookup";
 
@@ -48,8 +48,9 @@ export function LookupWorkspace() {
   const [panel, setPanel] = useState<"results" | "history" | "favorites">(
     "results",
   );
+  const abortRef = useRef<AbortController | null>(null);
 
-  const canSubmit = q.trim().length > 0 && !loading;
+  const canSubmit = q.trim().length > 0;
 
   function updateQuery(next: string) {
     setQ(next);
@@ -64,6 +65,12 @@ export function LookupWorkspace() {
     [],
   );
 
+  function cancelLookup() {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setLoading(false);
+  }
+
   async function onSubmit(
     e?: React.FormEvent,
     overrides?: { kind?: LookupKind; mode?: InputMode },
@@ -75,16 +82,29 @@ export function LookupWorkspace() {
     }
     const submitMode = overrides?.mode ?? mode;
     const submitKind = overrides?.kind ?? kind;
-    setLoading(true);
+
+    // Abandon any in-flight request; clear stale UI immediately
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    setResult(null);
     setError(null);
+    setLoading(true);
     setPanel("results");
+
     try {
-      const data = await lookup({
-        q: q.trim(),
-        mode: submitMode,
-        kind: submitKind,
-        options: { includeFunctionWords },
-      });
+      const data = await lookup(
+        {
+          q: q.trim(),
+          mode: submitMode,
+          kind: submitKind,
+          options: { includeFunctionWords },
+        },
+        controller.signal,
+      );
+      if (controller.signal.aborted) return;
+
       setResult(data);
       const summary =
         data.kind === "term"
@@ -101,10 +121,21 @@ export function LookupWorkspace() {
         }),
       );
     } catch (err) {
+      if (
+        err instanceof LookupAbortedError ||
+        controller.signal.aborted ||
+        (err instanceof Error && err.name === "AbortError")
+      ) {
+        // User cancelled or a newer lookup superseded this one — no error flash
+        return;
+      }
       setResult(null);
       setError(err instanceof Error ? err.message : "Lookup failed");
     } finally {
-      setLoading(false);
+      if (abortRef.current === controller) {
+        abortRef.current = null;
+        setLoading(false);
+      }
     }
   }
 
@@ -225,6 +256,16 @@ export function LookupWorkspace() {
           <Button type="submit" disabled={!canSubmit}>
             {loading ? "Looking up…" : "Look up"}
           </Button>
+          {loading ? (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={cancelLookup}
+              aria-label="Cancel lookup"
+            >
+              Cancel
+            </Button>
+          ) : null}
           <Toggle
             pressed={showFurigana}
             onPressedChange={setShowFurigana}
