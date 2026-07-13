@@ -1,0 +1,99 @@
+{
+  "version": "test",
+  "languages": ["eng"],
+  "commonOnly": false,
+  "dictDate": "2026-01-01",
+  "dictRevisions": ["test"],
+  "tags": {
+    "ichi1": "ranking",
+    "news1": "ranking",
+    "n": "noun",
+    "exp": "expression"
+  },
+  "words": [
+    {
+      "id": "1000000",
+      "kanji": [{ "common": true, "text": "水", "tags": ["ichi1"] }],
+      "kana": [
+        {
+          "common": true,
+          "text": "みず",
+          "tags": ["ichi1"],
+          "appliesToKanji": ["*"]
+        }
+      ],
+      "sense": [
+        {
+          "partOfSpeech": ["n"],
+          "appliesToKanji": ["*"],
+          "appliesToKana": ["*"],
+          "related": [],
+          "antonym": [],
+          "field": [],
+          "dialect": [],
+          "misc": [],
+          "info": [],
+          "languageSource": [],
+          "gloss": [{ "lang": "eng", "text": "water" }]
+        }
+      ]
+    },
+    {
+      "id": "1000001",
+      "kanji": [],
+      "kana": [
+        {
+          "common": true,
+          "text": "こんにちは",
+          "tags": ["ichi1"],
+          "appliesToKanji": ["*"]
+        }
+      ],
+      "sense": [
+        {
+          "partOfSpeech": ["int"],
+          "appliesToKanji": ["*"],
+          "appliesToKana": ["*"],
+          "related": [],
+          "antonym": [],
+          "field": [],
+          "dialect": [],
+          "misc": [],
+          "info": [],
+          "languageSource": [],
+          "gloss": [
+            { "lang": "eng", "text": "hello" },
+            { "lang": "eng", "text": "good day" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1000002",
+      "kanji": [{ "common": true, "text": "東京", "tags": ["news1"] }],
+      "kana": [
+        {
+          "common": true,
+          "text": "とうきょう",
+          "tags": [],
+          "appliesToKanji": ["*"]
+        }
+      ],
+      "sense": [
+        {
+          "partOfSpeech": ["n"],
+          "appliesToKanji": ["*"],
+          "appliesToKana": ["*"],
+          "related": [],
+          "antonym": [],
+          "field": [],
+          "dialect": [],
+          "misc": [],
+          "info": [],
+          "languageSource": [],
+          "gloss": [{ "lang": "eng", "text": "Tokyo" }]
+        }
+      ]
+    }
+  ]
+}

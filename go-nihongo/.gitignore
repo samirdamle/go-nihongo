@@ -40,3 +40,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# prepared JMdict (download via npm run dict:prepare)
+/data/*.json
+/data/*.tgz
+/data/*.zip
+!/data/.gitkeep
