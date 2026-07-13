@@ -16,6 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Toggle } from "@/components/ui/toggle";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { TermCard } from "@/features/lookup/term-card";
 import {
   clearHistory,
@@ -122,7 +123,7 @@ export function LookupWorkspace() {
             Japanese lookup for English speakers — terms and sentences.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <Button
             type="button"
             variant={panel === "history" ? "default" : "outline"}
@@ -142,6 +143,7 @@ export function LookupWorkspace() {
           >
             Favorites
           </Button>
+          <ThemeToggle />
         </div>
       </header>
 
