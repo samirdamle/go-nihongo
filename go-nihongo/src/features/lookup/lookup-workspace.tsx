@@ -191,51 +191,53 @@ export function LookupWorkspace() {
         </p>
 
       <form className="space-y-4" onSubmit={onSubmit}>
-        <div className="space-y-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-medium">Mode</span>
-            {!modeLocked ? (
-              <Badge variant="secondary">Auto</Badge>
-            ) : (
-              <Badge variant="outline">Manual</Badge>
-            )}
+        <div className="flex flex-wrap items-start gap-x-8 gap-y-4">
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm font-medium">Mode</span>
+              {!modeLocked ? (
+                <Badge variant="secondary">Auto</Badge>
+              ) : (
+                <Badge variant="outline">Manual</Badge>
+              )}
+            </div>
+            <Tabs
+              value={mode}
+              onValueChange={(v) => {
+                setMode(v as InputMode);
+                setModeLocked(true);
+              }}
+            >
+              <TabsList>
+                <TabsTrigger value="romaji">Romaji</TabsTrigger>
+                <TabsTrigger value="japanese">Japanese</TabsTrigger>
+                <TabsTrigger value="english">English</TabsTrigger>
+              </TabsList>
+            </Tabs>
           </div>
-          <Tabs
-            value={mode}
-            onValueChange={(v) => {
-              setMode(v as InputMode);
-              setModeLocked(true);
-            }}
-          >
-            <TabsList>
-              <TabsTrigger value="romaji">Romaji</TabsTrigger>
-              <TabsTrigger value="japanese">Japanese</TabsTrigger>
-              <TabsTrigger value="english">English</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
 
-        <div className="space-y-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-medium">Lookup</span>
-            {!kindLocked ? (
-              <Badge variant="secondary">Auto</Badge>
-            ) : (
-              <Badge variant="outline">Manual</Badge>
-            )}
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm font-medium">Lookup</span>
+              {!kindLocked ? (
+                <Badge variant="secondary">Auto</Badge>
+              ) : (
+                <Badge variant="outline">Manual</Badge>
+              )}
+            </div>
+            <Tabs
+              value={kind}
+              onValueChange={(v) => {
+                setKind(v as LookupKind);
+                setKindLocked(true);
+              }}
+            >
+              <TabsList>
+                <TabsTrigger value="term">Term</TabsTrigger>
+                <TabsTrigger value="sentence">Sentence</TabsTrigger>
+              </TabsList>
+            </Tabs>
           </div>
-          <Tabs
-            value={kind}
-            onValueChange={(v) => {
-              setKind(v as LookupKind);
-              setKindLocked(true);
-            }}
-          >
-            <TabsList>
-              <TabsTrigger value="term">Term</TabsTrigger>
-              <TabsTrigger value="sentence">Sentence</TabsTrigger>
-            </TabsList>
-          </Tabs>
         </div>
 
         <Textarea
