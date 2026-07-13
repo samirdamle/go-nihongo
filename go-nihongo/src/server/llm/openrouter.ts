@@ -5,11 +5,12 @@ import type {
 } from "./types";
 
 const DEFAULT_BASE = "https://openrouter.ai/api/v1";
-const DEFAULT_MODEL = "openai/gpt-4o-mini";
+/** Default: NVIDIA Nemotron free tier on OpenRouter (issue #25). */
+const DEFAULT_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free";
 
 export type OpenRouterClientOptions = {
   apiKey: string;
-  /** Default model id, e.g. `openai/gpt-4o-mini`, `anthropic/claude-3.5-sonnet`. */
+  /** Default model id, e.g. `nvidia/nemotron-3-ultra-550b-a55b:free`. */
   model?: string;
   baseUrl?: string;
   /**
