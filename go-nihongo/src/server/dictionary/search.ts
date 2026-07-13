@@ -1,8 +1,32 @@
 import type { InputMode, Suggestion, TermEntry } from "@/types/lookup";
+import { toHepburn } from "@/server/reading/hepburn";
 import { FIXTURE_ENTRIES } from "./fixtures";
 
 function normalize(s: string): string {
   return s.trim().toLowerCase();
+}
+
+/** Fold macron / ou variants for romaji comparison. */
+function foldRomaji(s: string): string {
+  return normalize(s)
+    .replace(/[āâ]/g, "a")
+    .replace(/[īî]/g, "i")
+    .replace(/[ūû]/g, "u")
+    .replace(/[ēê]/g, "e")
+    .replace(/[ōô]/g, "o")
+    .replace(/ou/g, "o")
+    .replace(/uu/g, "u");
+}
+
+function entryRomaji(e: TermEntry): string {
+  if (e.romaji) return e.romaji;
+  const reading = e.readings[0];
+  return reading ? toHepburn(reading) : "";
+}
+
+/** Ensure entries expose Hepburn romaji (from field or first reading). */
+export function withRomaji(entry: TermEntry): TermEntry {
+  return { ...entry, romaji: entryRomaji(entry) };
 }
 
 /** Ranked term search against the current dictionary source (fixtures in M1). */
@@ -17,13 +41,15 @@ export function searchTerms(
   let hits: TermEntry[] = [];
 
   if (mode === "romaji") {
-    hits = catalog.filter(
-      (e) =>
-        normalize(e.romaji).replace(/ō/g, "o").replace(/ū/g, "u") ===
-          n.replace(/ou/g, "o").replace(/uu/g, "u") ||
-        normalize(e.romaji) === n ||
-        e.readings.some((r) => readingToLooseRomaji(r) === n),
-    );
+    const foldedQ = foldRomaji(q);
+    hits = catalog.filter((e) => {
+      const r = entryRomaji(e);
+      return (
+        foldRomaji(r) === foldedQ ||
+        normalize(r) === n ||
+        e.readings.some((reading) => foldRomaji(toHepburn(reading)) === foldedQ)
+      );
+    });
   } else if (mode === "japanese") {
     hits = catalog.filter(
       (e) =>
@@ -38,15 +64,16 @@ export function searchTerms(
     );
   }
 
-  hits = [...hits].sort(
-    (a, b) => (b.commonality ?? 0) - (a.commonality ?? 0),
-  );
+  hits = [...hits]
+    .sort((a, b) => (b.commonality ?? 0) - (a.commonality ?? 0))
+    .map(withRomaji);
 
   const suggestions: Suggestion[] = [];
   if (hits.length === 0) {
     for (const e of catalog) {
-      if (normalize(e.romaji).startsWith(n.slice(0, 3)) && n.length >= 3) {
-        suggestions.push({ text: e.romaji, reason: "prefix" });
+      const r = entryRomaji(e);
+      if (normalize(r).startsWith(n.slice(0, 3)) && n.length >= 3) {
+        suggestions.push({ text: r, reason: "prefix" });
       }
     }
   }
@@ -58,11 +85,7 @@ export function getEntryById(
   id: string,
   catalog: TermEntry[] = FIXTURE_ENTRIES,
 ): TermEntry | undefined {
-  return catalog.find((e) => e.id === id);
+  const entry = catalog.find((e) => e.id === id);
+  return entry ? withRomaji(entry) : undefined;
 }
 
-/** Very small loose helper for fixture matching only */
-function readingToLooseRomaji(kana: string): string {
-  // Not a full kana→romaji; fixtures use explicit romaji field primarily.
-  return normalize(kana);
-}
