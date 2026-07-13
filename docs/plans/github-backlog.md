@@ -2,6 +2,10 @@
 
 Issues are written so an AI agent can implement and test **one issue at a time** without product re-discovery.
 
+**Epic:** [#2 Epic: Go Nihongo! v1 remaining work](https://github.com/samirdamle/go-nihongo/issues/2)
+
+**Filter:** [`label:agent-ready`](https://github.com/samirdamle/go-nihongo/issues?q=is%3Aissue+is%3Aopen+label%3Aagent-ready)
+
 ## Specs (always read first)
 
 | Doc | Path |
@@ -28,40 +32,39 @@ Do **not** re-implement unless an issue says to replace:
 - Local history + favorites (`src/features/history/storage.ts`)
 - Term cards with top-3 senses + star
 
-## Issue map (implementation order)
+## Issues map
 
-Recommended dependency order for agents:
+| # | Title | Milestone | Depends on |
+| --- | --- | --- | --- |
+| [#3](https://github.com/samirdamle/go-nihongo/issues/3) | GitHub Actions CI | M5 | — |
+| [#4](https://github.com/samirdamle/go-nihongo/issues/4) | API contract tests | M2 | — |
+| [#5](https://github.com/samirdamle/go-nihongo/issues/5) | Hepburn romaji + macrons | M2 | — |
+| [#6](https://github.com/samirdamle/go-nihongo/issues/6) | JMdict-class dictionary loader | M2 | #5 helpful |
+| [#7](https://github.com/samirdamle/go-nihongo/issues/7) | Production term search + ranking | M2 | #5, #6 |
+| [#8](https://github.com/samirdamle/go-nihongo/issues/8) | Soft-miss suggestions | M2 | #7 helpful |
+| [#9](https://github.com/samirdamle/go-nihongo/issues/9) | Morphological analyzer | M3 | #5 |
+| [#10](https://github.com/samirdamle/go-nihongo/issues/10) | Sentence orchestration | M3 | #9, #7 helpful |
+| [#11](https://github.com/samirdamle/go-nihongo/issues/11) | Breakdown UI + click-through | M3 | #10 |
+| [#12](https://github.com/samirdamle/go-nihongo/issues/12) | History/favorites tests + polish | M4 | — |
+| [#13](https://github.com/samirdamle/go-nihongo/issues/13) | Detect heuristics hardening | M2 | — |
+| [#14](https://github.com/samirdamle/go-nihongo/issues/14) | Error handling / limits | M5 | #4 helpful |
+| [#15](https://github.com/samirdamle/go-nihongo/issues/15) | Visual polish | M5 | — |
+| [#16](https://github.com/samirdamle/go-nihongo/issues/16) | Accessibility pass | M5 | #11 helpful |
+| [#17](https://github.com/samirdamle/go-nihongo/issues/17) | Playwright e2e smoke | M5 | #3 optional |
+| [#18](https://github.com/samirdamle/go-nihongo/issues/18) | Vercel deploy + env | M5 | — |
+| [#19](https://github.com/samirdamle/go-nihongo/issues/19) | Acceptance sign-off | M5 | After features |
 
-1. CI workflow  
-2. API contract tests (fixtures)  
-3. Kana → Hepburn romaji utility  
-4. JMdict (or equivalent) loader  
-5. Production term search indexes  
-6. Soft-miss suggestions  
-7. Morph analyzer  
-8. Sentence orchestration + breakdown API  
-9. Breakdown UI + click-through  
-10. History/favorites tests + UX polish  
-11. Detect heuristics hardening  
-12. Error/limits hardening  
-13. Visual polish (clean study tool)  
-14. A11y pass  
-15. Playwright e2e  
-16. Vercel deploy  
-17. Acceptance criteria sign-off  
+## Recommended parallel tracks for agents
 
-Epic issues group the above for humans; child issues are the agent units of work.
+1. **Track A (infra/tests):** #3 → #4 → #17  
+2. **Track B (dictionary):** #5 → #6 → #7 → #8  
+3. **Track C (sentence):** #5 → #9 → #10 → #11  
+4. **Track D (UX polish):** #12, #13, #15, #14, #16 in any order after core  
+5. **Track E (ship):** #18 anytime; #19 last  
 
 ## Agent contract (every issue)
 
-Each issue includes:
+Each issue includes goal, current code, specs/AC IDs, steps, tests, DoD, dependencies.
 
-- **Goal** and **out of scope**
-- **Current code** pointers
-- **Spec / AC IDs** to satisfy
-- **Implementation steps**
-- **Test plan** (TDD preferred)
-- **DoD** checklist
-- **Dependencies**
-
-Agents should open a branch `issue/<number>-short-slug`, implement, test, and open a PR referencing the issue.
+**Branch naming:** `issue/<number>-short-slug`  
+**PR:** reference `Fixes #N` or `Closes #N`.
