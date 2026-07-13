@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { loadDictionary } from "@/server/dictionary/load";
 import { searchTerms } from "@/server/dictionary/search";
 import { createSentenceTranslator } from "@/server/mt";
 import type {
@@ -38,7 +39,8 @@ export async function POST(request: Request) {
 
   try {
     if (kind === "term") {
-      const { entries, suggestions } = searchTerms(q, mode);
+      const catalog = await loadDictionary();
+      const { entries, suggestions } = searchTerms(q, mode, catalog);
       const response: LookupResponse = {
         kind: "term",
         query: q,
