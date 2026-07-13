@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, History, Star } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -115,37 +115,49 @@ export function LookupWorkspace() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8">
-      <header className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Go Nihongo!</h1>
-          <p className="text-muted-foreground text-sm">
-            Japanese lookup for English speakers — terms and sentences.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            variant={panel === "history" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setPanel("history")}
-          >
-            History
-          </Button>
-          <Button
-            type="button"
-            variant={panel === "favorites" ? "default" : "outline"}
-            size="sm"
-            onClick={() => {
-              setFavorites(loadFavorites());
-              setPanel("favorites");
-            }}
-          >
-            Favorites
-          </Button>
-          <ThemeToggle />
+    <div className="flex w-full flex-col">
+      <header className="sticky top-0 z-50 border-b border-border/80 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <div className="mx-auto flex h-14 w-full max-w-3xl items-center justify-between gap-3 px-4">
+          <h1 className="truncate text-xl font-semibold tracking-tight sm:text-2xl">
+            Go Nihongo!
+          </h1>
+          <div className="flex shrink-0 items-center gap-2">
+            <Button
+              type="button"
+              variant={panel === "history" ? "default" : "outline"}
+              size="icon"
+              className="size-8 shrink-0"
+              aria-label="History"
+              title="History"
+              aria-pressed={panel === "history"}
+              onClick={() => setPanel("history")}
+            >
+              <History className="size-4" aria-hidden />
+            </Button>
+            <Button
+              type="button"
+              variant={panel === "favorites" ? "default" : "outline"}
+              size="icon"
+              className="size-8 shrink-0"
+              aria-label="Favorites"
+              title="Favorites"
+              aria-pressed={panel === "favorites"}
+              onClick={() => {
+                setFavorites(loadFavorites());
+                setPanel("favorites");
+              }}
+            >
+              <Star className="size-4" aria-hidden />
+            </Button>
+            <ThemeToggle />
+          </div>
         </div>
       </header>
+
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 pt-6 pb-8">
+        <p className="text-muted-foreground text-sm">
+          Japanese lookup for English speakers — terms and sentences.
+        </p>
 
       <form className="space-y-4" onSubmit={onSubmit}>
         <div className="space-y-2">
@@ -424,6 +436,7 @@ export function LookupWorkspace() {
           ) : null}
         </section>
       ) : null}
+      </div>
     </div>
   );
 }
